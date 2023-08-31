@@ -93,16 +93,16 @@ class FirsPage extends StatelessWidget {
                       ),
                       const Row(
                         children: [
-                          Icon(Icons.sensor_window_rounded),
+                          Icon(Icons.edit),
                           Text('5 Soal'),
                         ],
                       ),
                       const SizedBox(
-                        height: 5,
+                        height: 7,
                       ),
                       const Row(
                         children: [
-                          Icon(Icons.timer),
+                          Icon(Icons.timer_outlined),
                           Text('20 menit'),
                         ],
                       ),

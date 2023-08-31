@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -35,16 +36,16 @@ class _QuizPageState extends State<QuizPage> {
       'answers': ['2', '4', '6', '8'],
       'correctIndex': [1],
     },
-    //  {
-    //    'question': 'Mana saja yang termasuk benua di dunia?',
-    //    'answers': [
-    //      ['Indonesia', false],
-    //      ['Australia', false],
-    //      ['Afrika', false],
-    //      ['Jawa', false],
-    //    ],
-    //    'correctIndices': [1, 2],
-    //  },
+    // {
+    //   'question': 'Mana saja yang termasuk benua di dunia?',
+    //   'answers': [
+    //     ['Indonesia', f  alse],
+    //     ['Australia', false],
+    //     ['Afrika', false],
+    //     ['Jawa', false],
+    //   ],
+    //   'correctIndices': [1, 2],
+    // },
   ];
 
   bool get isMultipleChoice =>
@@ -140,7 +141,7 @@ class _QuizPageState extends State<QuizPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // BUAT IKON WAKTU DAN JAMNYA
+                //BUAT IKON WAKTU DAN JAMNYA
                 const Row(
                   children: [
                     Icon(Icons.timer_outlined, size: 30),
@@ -151,7 +152,7 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                   ],
                 ),
-                // BUAT sebuah card untuk indeks soal
+                //BUAT sebuah card untuk indeks soal
                 Row(
                   children: [
                     Card(
@@ -296,16 +297,15 @@ class _QuizPageState extends State<QuizPage> {
   void showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      constraints:,
       builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              // width: double.infinity,
               padding: const EdgeInsets.all(16.0),
-              // color: Colors.blue,
-              child: const Text(
-                'Judul Bottom Sheet',
+              child: Text(
+                'Pilih Nomor Soal',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
@@ -313,43 +313,33 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ),
             Container(
-              height: 200,
+              height: 200, // Tinggi GridView
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5, //Jumlah kolom dalam grid
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5, // Jumlah kolom dalam grid
                 ),
-                itemCount: questions.length, //Jumlah nomor soal
+                itemCount: questions.length, // Jumlah nomor soal
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      //  Tindakan ketika nomor soal dipilih
-                      Navigator.pop(context); //Tutup bottom sheet
-                      //  Lakukan tindakan lain sesuai nomor soal yang dipilih
+                      // Tindakan ketika nomor soal dipilih
+                      Navigator.pop(context); // Tutup bottom sheet
+                      // Lakukan tindakan lain sesuai nomor soal yang dipilih
                     },
-                    child: GestureDetector(
-                      child: Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: _currentQuestionIndex == index
-                              ? Colors.green
-                              : const Color.fromRGBO(217, 217, 217, 1),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          (index + 1).toString(), // Tampilkan nomor soal
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text(
+                        (index + 1).toString(), // Tampilkan nomor soal
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onTap: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          _currentQuestionIndex = index;
-                        });
-                      },
                     ),
                   );
                 },
@@ -360,59 +350,52 @@ class _QuizPageState extends State<QuizPage> {
       },
     );
   }
-
-  Widget soalBottomSheet() {
-    return BottomSheet(
-      onClosing: () {
-        Navigator.pop(context);
-      },
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      builder: (context) {
-        return Container(
-          height: 200,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16.0),
-                color: Colors.blue,
-                child: const Text(
-                  'Judul Bottom Sheet',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: questions.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      color: _currentQuestionIndex == index
-                          ? Colors.blue[100]
-                          : Colors.white,
-                      child: ListTile(
-                        title: Text(
-                          questions[index]['question'],
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          setState(() {
-                            _currentQuestionIndex = index;
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  // Widget soalBottomSheet() {
+  //   return BottomSheet(
+  //     onClosing: () {
+  //       Navigator.pop(context);
+  //     },
+  //     clipBehavior: Clip.antiAliasWithSaveLayer,
+  //     builder: (context) {
+  //       return Container(
+  //         height: 200,
+  //         child: Column(
+  //           children: [
+  //             Container(
+  //               width: double.infinity,
+  //               padding: const EdgeInsets.all(16.0),
+  //               color: Colors.blue,
+  //               child: const Text(
+  //                 'Judul Bottom Sheet',
+  //                 style: TextStyle(
+  //                   fontSize: 20.0,
+  //                   fontWeight: FontWeight.bold,
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 10),
+  //             Expanded(
+  //               child: ListView.builder(
+  //                 itemCount: questions.length,
+  //                 itemBuilder: (context, index) {
+  //                   return ListTile(
+  //                     title: Text('Soal ${index + 1}'),
+  //                     onTap: () {
+  //                       setState(() {
+  //                         _currentQuestionIndex = index;
+  //                       });
+  //                       Navigator.pop(context);
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }
+
+ */
