@@ -122,20 +122,28 @@ class _QuizPageState extends State<QuizPage> {
         title: const Text('Quiz Page'),
         titleTextStyle: const TextStyle(
           fontSize: 18,
-          color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.check, size: 30),
+            icon: const Icon(Icons.check, size: 30, color: Colors.white),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,31 +266,67 @@ class _QuizPageState extends State<QuizPage> {
                           ),
                         );
                       })),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Visibility(
                             visible: _currentQuestionIndex > 0,
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(
+                                  MediaQuery.of(context).size.width * 0.2,
+                                  50,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Theme.of(context).primaryColor,
+                              ),
                               onPressed: _previousQuestion,
-                              child: Text('Previous'),
+                              child:
+                                  const Icon(Icons.arrow_circle_left_outlined),
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              if (_currentQuestionIndex <
-                                  questions.length - 1) {
-                                _nextQuestion();
-                              } else {
-                                _nextQuestion();
-                              }
-                            },
-                            child: Text(
-                                _currentQuestionIndex < questions.length - 1
-                                    ? 'Next'
-                                    : 'Submit'),
-                          ),
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(
+                                  MediaQuery.of(context).size.width * 0.7,
+                                  50,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                if (_currentQuestionIndex <
+                                    questions.length - 1) {
+                                  _nextQuestion();
+                                } else {
+                                  _nextQuestion();
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _currentQuestionIndex < questions.length - 1
+                                      ? const Text(
+                                          "Next",
+                                          style: TextStyle(color: Colors.white),
+                                        )
+                                      : const Text(
+                                          "Submit",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                  _currentQuestionIndex < questions.length - 1
+                                      ? const Icon(
+                                          Icons.arrow_circle_right_outlined)
+                                      : const Icon(
+                                          Icons.done_outline_rounded,
+                                        ),
+                                ],
+                              )),
                         ],
                       ),
                     ],
@@ -296,22 +340,34 @@ class _QuizPageState extends State<QuizPage> {
   void showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
+        ),
+      ),
       builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Padding(
-              // width: double.infinity,
-              padding: const EdgeInsets.all(16.0),
-              // color: Colors.blue,
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                color: Theme.of(context).primaryColor,
+              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
               child: const Text(
-                'Judul Bottom Sheet',
+                'List Soal',
                 style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
+            const SizedBox(height: 10),
             Container(
               height: 200,
               child: GridView.builder(
@@ -356,61 +412,6 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ),
           ],
-        );
-      },
-    );
-  }
-
-  Widget soalBottomSheet() {
-    return BottomSheet(
-      onClosing: () {
-        Navigator.pop(context);
-      },
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      builder: (context) {
-        return Container(
-          height: 200,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16.0),
-                color: Colors.blue,
-                child: const Text(
-                  'Judul Bottom Sheet',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: questions.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      color: _currentQuestionIndex == index
-                          ? Colors.blue[100]
-                          : Colors.white,
-                      child: ListTile(
-                        title: Text(
-                          questions[index]['question'],
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          setState(() {
-                            _currentQuestionIndex = index;
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
         );
       },
     );
