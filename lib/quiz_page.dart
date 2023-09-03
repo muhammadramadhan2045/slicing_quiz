@@ -284,8 +284,10 @@ class _QuizPageState extends State<QuizPage> {
                                 backgroundColor: Theme.of(context).primaryColor,
                               ),
                               onPressed: _previousQuestion,
-                              child:
-                                  const Icon(Icons.arrow_circle_left_outlined),
+                              child: const Icon(
+                                Icons.arrow_circle_left_outlined,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           ElevatedButton(
@@ -321,9 +323,12 @@ class _QuizPageState extends State<QuizPage> {
                                         ),
                                   _currentQuestionIndex < questions.length - 1
                                       ? const Icon(
-                                          Icons.arrow_circle_right_outlined)
+                                          Icons.arrow_circle_right_outlined,
+                                          color: Colors.white,
+                                        )
                                       : const Icon(
                                           Icons.done_outline_rounded,
+                                          color: Colors.white,
                                         ),
                                 ],
                               )),

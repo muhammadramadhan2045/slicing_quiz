@@ -15,10 +15,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: const Color(0xff0f497a),
-        colorScheme: ColorScheme.fromSwatch(
-          backgroundColor: Colors.white,
-          primarySwatch: Colors.grey,
-        ),
+        // colorScheme: ColorScheme.fromSwatch(
+        //   backgroundColor: Colors.white,
+        //   primarySwatch: Colors.grey,
+        // ),
         useMaterial3: true,
       ),
       home: const FirsPage(),

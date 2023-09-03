@@ -1,19 +1,11 @@
-/*
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class QuizPage extends StatefulWidget {
-  const QuizPage({Key? key}) : super(key: key);
-
-  @override
-  State<QuizPage> createState() => _QuizPageState();
-}
-
-class _QuizPageState extends State<QuizPage> {
-  int _currentQuestionIndex = 0;
-  int _score = 0;
-  List<int> _selectedIndices = [];
-  List<dynamic> selectedAnswers = [];
+class QuizController extends GetxController {
+  var currentQuestionIndex = 0.obs;
+  var score = 0.obs;
+  var selectedIndices = <int>[];
+  var selectedAnswers = <dynamic>[].obs;
 
   List<Map<String, dynamic>> questions = [
     {
@@ -36,258 +28,306 @@ class _QuizPageState extends State<QuizPage> {
       'answers': ['2', '4', '6', '8'],
       'correctIndex': [1],
     },
-    // {
-    //   'question': 'Mana saja yang termasuk benua di dunia?',
-    //   'answers': [
-    //     ['Indonesia', f  alse],
-    //     ['Australia', false],
-    //     ['Afrika', false],
-    //     ['Jawa', false],
-    //   ],
-    //   'correctIndices': [1, 2],
-    // },
   ];
 
   bool get isMultipleChoice =>
-      questions[_currentQuestionIndex]['answers'] is List<List<dynamic>>;
+      questions[currentQuestionIndex.value]['answers'] is List<List<dynamic>>;
 
-  void _checkAnswer(List<dynamic> selectedAnswers) {
+  void checkAnswer(List<dynamic> selectedAnswers) {
     List<dynamic> correctAnswers =
-        questions[_currentQuestionIndex]['correctIndex'];
+        questions[currentQuestionIndex.value]['correctIndex'];
 
-    if (listEquals(correctAnswers, selectedAnswers)) {
-      setState(() {
-        _score++;
-      });
+    if (selectedAnswers.length == correctAnswers.length &&
+        selectedAnswers.every((answer) => correctAnswers.contains(answer))) {
+      score.value++;
     }
   }
 
-  void _nextQuestion() {
-    setState(() {
-      if (isMultipleChoice) {
-        _checkAnswer(selectedAnswers);
-        selectedAnswers.clear();
-      } else {
-        if (_selectedIndices.isNotEmpty) {
-          int selectedAnswerIndex = _selectedIndices[0];
-          List<int> correctAnswerIndices =
-              questions[_currentQuestionIndex]['correctIndex'];
+  void nextQuestion() {
+    if (isMultipleChoice) {
+      checkAnswer(selectedAnswers);
+      selectedAnswers.clear();
+    } else {
+      if (selectedIndices.isNotEmpty) {
+        int selectedAnswerIndex = selectedIndices[0];
+        List<int> correctAnswerIndices =
+            questions[currentQuestionIndex.value]['correctIndex'];
 
-          if (correctAnswerIndices.contains(selectedAnswerIndex)) {
-            _score++;
-          }
+        if (correctAnswerIndices.contains(selectedAnswerIndex)) {
+          score.value++;
         }
-        _selectedIndices.clear();
       }
+      selectedIndices.clear();
+    }
 
-      if (_currentQuestionIndex < questions.length - 1) {
-        _currentQuestionIndex++;
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Kuis Selesai'),
-              content: Text('Skor Anda: $_score / ${questions.length}'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentQuestionIndex = 0;
-                      _score = 0;
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Tutup'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    });
+    if (currentQuestionIndex.value < questions.length - 1) {
+      currentQuestionIndex.value++;
+    } else {
+      Get.defaultDialog(
+        title: 'Kuis Selesai',
+        content: Text('Skor Anda: ${score.value} / ${questions.length}'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              currentQuestionIndex.value = 0;
+              score.value = 0;
+              Get.back();
+            },
+            child: Text('Tutup'),
+          ),
+        ],
+      );
+    }
   }
 
-  void _previousQuestion() {
-    setState(() {
-      if (_currentQuestionIndex > 0) {
-        _currentQuestionIndex--;
-      }
-    });
+  void previousQuestion() {
+    if (currentQuestionIndex.value > 0) {
+      currentQuestionIndex.value--;
+    }
   }
+}
+
+class QuizPage extends StatelessWidget {
+  final QuizController quizController = Get.put(QuizController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Page'),
-        titleTextStyle: const TextStyle(
+        title: Text('Quiz Page'),
+        titleTextStyle: TextStyle(
           fontSize: 18,
-          color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.check, size: 30),
+            icon: Icon(Icons.check, size: 30, color: Colors.white),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //BUAT IKON WAKTU DAN JAMNYA
-                const Row(
-                  children: [
-                    Icon(Icons.timer_outlined, size: 30),
-                    SizedBox(width: 10),
-                    Text(
-                      '00:00',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ),
-                //BUAT sebuah card untuk indeks soal
-                Row(
-                  children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          '${_currentQuestionIndex + 1}/${questions.length}',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => showBottomSheet(context),
-                      icon: const Icon(Icons.dashboard_outlined, size: 30),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              questions[_currentQuestionIndex]['question'],
-              style: const TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            isMultipleChoice
-                ? Column(
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // BUAT IKON WAKTU DAN JAMNYA
+                  Row(
                     children: [
-                      ...((questions[_currentQuestionIndex]['answers']
-                              as List<List<dynamic>>)
-                          .asMap()
-                          .entries
-                          .map((entry) {
-                        int index = entry.key;
-                        String answer = entry.value[0];
-                        bool isChecked = entry.value[1];
-                        return CheckboxListTile(
-                          title: Text(answer),
-                          value: isChecked,
-                          onChanged: (value) {
-                            setState(() {
-                              questions[_currentQuestionIndex]['answers'][index]
-                                  [1] = value ?? false;
-                            });
-                          },
-                        );
-                      })),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Visibility(
-                            visible: _currentQuestionIndex > 0,
-                            child: ElevatedButton(
-                              onPressed: _previousQuestion,
-                              child: const Text('Previous'),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              ((questions[_currentQuestionIndex]['answers']
-                                      as List<List<dynamic>>)
-                                  .forEach((answer) {
-                                selectedAnswers.add(answer[1]);
-                              }));
-                              _checkAnswer(selectedAnswers);
-                              _nextQuestion();
-                              ((questions[_currentQuestionIndex]['answers']
-                                      as List<List<dynamic>>)
-                                  .forEach((answer) {
-                                answer[1] = false;
-                              }));
-                            },
-                            child: const Text('Next'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      ...((questions[_currentQuestionIndex]['answers']
-                              as List<String>)
-                          .asMap()
-                          .entries
-                          .map((entry) {
-                        int index = entry.key;
-                        String answer = entry.value;
-                        return Card(
-                          color: const Color.fromRGBO(217, 217, 217, 1),
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: RadioListTile<int>(
-                            title: Text(answer),
-                            value: index,
-                            groupValue: _selectedIndices.isNotEmpty
-                                ? _selectedIndices[0]
-                                : null,
-                            onChanged: (int? value) {
-                              setState(() {
-                                _selectedIndices = [value ?? -1];
-                              });
-                            },
-                          ),
-                        );
-                      })),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Visibility(
-                            visible: _currentQuestionIndex > 0,
-                            child: ElevatedButton(
-                              onPressed: _previousQuestion,
-                              child: Text('Previous'),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_currentQuestionIndex <
-                                  questions.length - 1) {
-                                _nextQuestion();
-                              } else {
-                                _nextQuestion();
-                              }
-                            },
-                            child: Text(
-                                _currentQuestionIndex < questions.length - 1
-                                    ? 'Next'
-                                    : 'Submit'),
-                          ),
-                        ],
+                      Icon(Icons.timer_outlined, size: 30),
+                      SizedBox(width: 10),
+                      Text(
+                        '00:00',
+                        style: TextStyle(fontSize: 18),
                       ),
                     ],
                   ),
+                  // BUAT sebuah card untuk indeks soal
+                  Row(
+                    children: [
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '${quizController.currentQuestionIndex.value + 1}/${quizController.questions.length}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => showBottomSheet(context),
+                        icon: Icon(Icons.dashboard_outlined, size: 30),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Obx(
+              () => Text(
+                quizController
+                        .questions[quizController.currentQuestionIndex.value]
+                    ['question'],
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            SizedBox(height: 20),
+            Obx(
+              () => quizController.isMultipleChoice
+                  ? Column(
+                      children: [
+                        ...((quizController.questions[quizController
+                                .currentQuestionIndex
+                                .value]['answers'] as List<List<dynamic>>)
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          int index = entry.key;
+                          String answer = entry.value[0];
+                          bool isChecked =
+                              quizController.selectedAnswers[index] ?? false;
+                          return CheckboxListTile(
+                            title: Text(answer),
+                            value: isChecked,
+                            onChanged: (value) {
+                              quizController.selectedAnswers[index] =
+                                  value ?? false;
+                            },
+                          );
+                        })),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Visibility(
+                              visible:
+                                  quizController.currentQuestionIndex.value > 0,
+                              child: ElevatedButton(
+                                onPressed: quizController.previousQuestion,
+                                child: Text('Previous'),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                ((quizController.questions[quizController
+                                            .currentQuestionIndex.value]
+                                        ['answers'] as List<List<dynamic>>)
+                                    .forEach((answer) {
+                                  quizController.selectedAnswers.add(answer[1]);
+                                }));
+                                quizController.checkAnswer(
+                                    quizController.selectedAnswers);
+                                quizController.nextQuestion();
+                                ((quizController.questions[quizController
+                                            .currentQuestionIndex.value]
+                                        ['answers'] as List<List<dynamic>>)
+                                    .forEach((answer) {
+                                  answer[1] = false;
+                                }));
+                              },
+                              child: Text('Next'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        ...((quizController.questions[quizController
+                                .currentQuestionIndex
+                                .value]['answers'] as List<String>)
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          int index = entry.key;
+                          String answer = entry.value;
+                          return Card(
+                            color: Color.fromRGBO(217, 217, 217, 1),
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            child: RadioListTile<int>(
+                              title: Text(answer),
+                              value: index,
+                              groupValue:
+                                  quizController.selectedIndices.isNotEmpty
+                                      ? quizController.selectedIndices[0]
+                                      : null,
+                              onChanged: (int? value) {
+                                quizController.selectedIndices = [value ?? -1];
+                              },
+                            ),
+                          );
+                        })),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Visibility(
+                              visible:
+                                  quizController.currentQuestionIndex.value > 0,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(
+                                    MediaQuery.of(context).size.width * 0.2,
+                                    50,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                ),
+                                onPressed: quizController.previousQuestion,
+                                child: Icon(
+                                  Icons.arrow_circle_left_outlined,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                fixedSize: Size(
+                                  MediaQuery.of(context).size.width * 0.7,
+                                  50,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor: Theme.of(context).primaryColor,
+                              ),
+                              onPressed: () {
+                                if (quizController.currentQuestionIndex.value <
+                                    quizController.questions.length - 1) {
+                                  quizController.nextQuestion();
+                                } else {
+                                  quizController.nextQuestion();
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  quizController.currentQuestionIndex.value <
+                                          quizController.questions.length - 1
+                                      ? Text(
+                                          "Next",
+                                          style: TextStyle(color: Colors.white),
+                                        )
+                                      : Text(
+                                          "Submit",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                  quizController.currentQuestionIndex.value <
+                                          quizController.questions.length - 1
+                                      ? Icon(
+                                          Icons.arrow_circle_right_outlined,
+                                          color: Colors.white,
+                                        )
+                                      : Icon(
+                                          Icons.done_outline_rounded,
+                                          color: Colors.white,
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+            ),
           ],
         ),
       ),
@@ -297,49 +337,71 @@ class _QuizPageState extends State<QuizPage> {
   void showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      constraints:,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
+        ),
+      ),
       builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                color: Theme.of(context).primaryColor,
+              ),
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(10),
               child: Text(
-                'Pilih Nomor Soal',
+                'List Soal',
                 style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
+            SizedBox(height: 10),
             Container(
-              height: 200, // Tinggi GridView
+              height: 200,
               child: GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5, // Jumlah kolom dalam grid
+                  crossAxisCount: 5, //Jumlah kolom dalam grid
                 ),
-                itemCount: questions.length, // Jumlah nomor soal
+                itemCount: quizController.questions.length, //Jumlah nomor soal
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      // Tindakan ketika nomor soal dipilih
-                      Navigator.pop(context); // Tutup bottom sheet
-                      // Lakukan tindakan lain sesuai nomor soal yang dipilih
+                      //  Tindakan ketika nomor soal dipilih
+                      Navigator.pop(context); //Tutup bottom sheet
+                      //  Lakukan tindakan lain sesuai nomor soal yang dipilih
                     },
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text(
-                        (index + 1).toString(), // Tampilkan nomor soal
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                    child: GestureDetector(
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color:
+                              quizController.currentQuestionIndex.value == index
+                                  ? Colors.green
+                                  : Color.fromRGBO(217, 217, 217, 1),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          (index + 1).toString(), // Tampilkan nomor soal
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        quizController.currentQuestionIndex.value = index;
+                      },
                     ),
                   );
                 },
@@ -350,52 +412,4 @@ class _QuizPageState extends State<QuizPage> {
       },
     );
   }
-  // Widget soalBottomSheet() {
-  //   return BottomSheet(
-  //     onClosing: () {
-  //       Navigator.pop(context);
-  //     },
-  //     clipBehavior: Clip.antiAliasWithSaveLayer,
-  //     builder: (context) {
-  //       return Container(
-  //         height: 200,
-  //         child: Column(
-  //           children: [
-  //             Container(
-  //               width: double.infinity,
-  //               padding: const EdgeInsets.all(16.0),
-  //               color: Colors.blue,
-  //               child: const Text(
-  //                 'Judul Bottom Sheet',
-  //                 style: TextStyle(
-  //                   fontSize: 20.0,
-  //                   fontWeight: FontWeight.bold,
-  //                 ),
-  //               ),
-  //             ),
-  //             const SizedBox(height: 10),
-  //             Expanded(
-  //               child: ListView.builder(
-  //                 itemCount: questions.length,
-  //                 itemBuilder: (context, index) {
-  //                   return ListTile(
-  //                     title: Text('Soal ${index + 1}'),
-  //                     onTap: () {
-  //                       setState(() {
-  //                         _currentQuestionIndex = index;
-  //                       });
-  //                       Navigator.pop(context);
-  //                     },
-  //                   );
-  //                 },
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 }
-
- */
