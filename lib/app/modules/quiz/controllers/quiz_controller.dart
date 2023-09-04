@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quiz_getx/app/routes/app_pages.dart';
 
 class QuizController extends GetxController {
   var currentQuestionIndex = 0.obs;
@@ -68,20 +69,7 @@ class QuizController extends GetxController {
     if (currentQuestionIndex.value < questions.length - 1) {
       currentQuestionIndex.value++;
     } else {
-      Get.defaultDialog(
-        title: 'Kuis Selesai',
-        content: Text('Skor Anda: ${score.value} / ${questions.length}'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              currentQuestionIndex.value = 0;
-              score.value = 0;
-              Get.back();
-            },
-            child: const Text('Tutup'),
-          ),
-        ],
-      );
+      showExitQuizDialog();
     }
   }
 
@@ -91,24 +79,94 @@ class QuizController extends GetxController {
     }
   }
 
+  // void showExitQuizDialog() {
+  //   Get.defaultDialog(
+  //     title: 'Konfirmasi',
+  //     middleText: 'Apakah Anda yakin ingin menyudahi ujian?',
+  //     radius: 20,
+  //     contentPadding: const EdgeInsets.all(16),
+  //     titleStyle: const TextStyle(
+  //       fontSize: 20,
+  //       fontWeight: FontWeight.bold,
+  //       backgroundColor: Colors.blue,
+  //     ),
+  //     confirm: ElevatedButton(
+  //       onPressed: () {
+  //         if (selectedIndices.isNotEmpty) {
+  //           int selectedAnswerIndex = selectedIndices[0];
+  //           List<int> correctAnswerIndices =
+  //               questions[currentQuestionIndex.value]['correctIndex'];
+
+  //           if (correctAnswerIndices.contains(selectedAnswerIndex)) {
+  //             score.value++;
+  //           }
+  //         }
+  //         selectedIndices.clear();
+  //         Get.offAllNamed(Routes.RESULT); // Pindah ke halaman hasil
+  //       },
+  //       child: const Text('Ya'),
+  //     ),
+  //     cancel: ElevatedButton(
+  //       onPressed: () {
+  //         Get.back();
+  //       },
+  //       child: const Text('Tidak'),
+  //     ),
+  //   );
+  // }
   void showExitQuizDialog() {
-    Get.defaultDialog(
-      title: 'Konfirmasi',
-      middleText: 'Apakah Anda yakin ingin menyudahi ujian?',
-      actions: [
-        ElevatedButton(
-          onPressed: () {
-            // Get.offAll(ResultPage()); // Pindah ke halaman hasil
-          },
-          child: const Text('Ya'),
+    Get.dialog(
+      Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              color: Colors
+                  .blue, // Ganti warna latar belakang sesuai keinginan Anda
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              child: const Text(
+                'Konfirmasi',
+                style: TextStyle(
+                  color: Colors.white, // Ganti warna teks jika diperlukan
+                  fontSize: 18, // Ganti ukuran font jika diperlukan
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Apakah Anda yakin ingin menyudahi ujian?'),
+            ),
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: const Text('Tidak'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedIndices.isNotEmpty) {
+                      int selectedAnswerIndex = selectedIndices[0];
+                      List<int> correctAnswerIndices =
+                          questions[currentQuestionIndex.value]['correctIndex'];
+
+                      if (correctAnswerIndices.contains(selectedAnswerIndex)) {
+                        score.value++;
+                      }
+                    }
+                    selectedIndices.clear();
+                    Get.offAllNamed(Routes.RESULT); // Pindah ke halaman hasil
+                  },
+                  child: const Text('Ya'),
+                ),
+              ],
+            ),
+          ],
         ),
-        ElevatedButton(
-          onPressed: () {
-            Get.back();
-          },
-          child: const Text('Tidak'),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
@@ -20,4 +21,13 @@ class HomeController extends GetxController {
   }
 
   void increment() => count.value++;
+
+  final List<Map<String, dynamic>> iconsData = [
+    {'icon': Icons.edit_note_rounded, 'text': 'Koreksi jika perlu'},
+    {'icon': Icons.person_2, 'text': 'Berada ditempat kondusif'},
+    {'icon': Icons.person_2, 'text': 'Jujur'},
+    {'icon': Icons.network_wifi, 'text': 'Koneksi Stabil'},
+    {'icon': Icons.battery_full, 'text': 'Baterai Cukup'},
+    {'icon': Icons.phone_android, 'text': 'Tidak Keluar dari Aplikasi'},
+  ];
 }

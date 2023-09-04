@@ -9,8 +9,6 @@ class QuizView extends GetView<QuizController> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-        'QuizView rebuild :${controller.questions[controller.currentQuestionIndex.value]['question']}');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quiz Page'),
@@ -29,7 +27,7 @@ class QuizView extends GetView<QuizController> {
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => controller.showExitQuizDialog(),
             icon: const Icon(Icons.check, size: 30, color: Colors.white),
           ),
         ],
@@ -166,7 +164,7 @@ class QuizView extends GetView<QuizController> {
                               );
                             },
                           )),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -217,6 +215,7 @@ class QuizView extends GetView<QuizController> {
                                 },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     controller.currentQuestionIndex.value <
                                             controller.questions.length - 1
@@ -230,6 +229,7 @@ class QuizView extends GetView<QuizController> {
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
+                                    const SizedBox(width: 10),
                                     controller.currentQuestionIndex.value <
                                             controller.questions.length - 1
                                         ? const Icon(
@@ -239,6 +239,7 @@ class QuizView extends GetView<QuizController> {
                                         : const Icon(
                                             Icons.done_outline_rounded,
                                             color: Colors.white,
+                                            size: 20,
                                           ),
                                   ],
                                 ),
@@ -312,7 +313,7 @@ class QuizView extends GetView<QuizController> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(
-                          (index + 1).toString(), // Tampilkan nomor soal
+                          (index + 1).toString(), // Tampilkan nomor sosubal
                           style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
