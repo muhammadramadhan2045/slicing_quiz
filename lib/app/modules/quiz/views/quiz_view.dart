@@ -291,16 +291,14 @@ class QuizView extends GetView<QuizController> {
               height: 200,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 5, // Jumlah kolom dalam grid
+                  crossAxisCount: 5,
                 ),
-                itemCount: controller.questions.length, // Jumlah nomor soal
+                itemCount: controller.questions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      //  Tindakan ketika nomor soal dipilih
-                      Navigator.pop(context); // Tutup bottom sheet
-                      controller.currentQuestionIndex.value =
-                          index; // Ganti pertanyaan saat dipilih
+                      Navigator.pop(context);
+                      controller.currentQuestionIndex.value = index;
                     },
                     child: GestureDetector(
                       child: Container(

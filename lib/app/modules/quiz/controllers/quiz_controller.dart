@@ -139,7 +139,7 @@ class QuizController extends GetxController {
                       }
                     }
                     selectedIndices.clear();
-                    Get.offAllNamed(Routes.RESULT); // Pindah ke halaman hasil
+                    Get.toNamed(Routes.RESULT); // Pindah ke halaman hasil
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
