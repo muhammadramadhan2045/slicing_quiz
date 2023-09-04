@@ -79,57 +79,31 @@ class QuizController extends GetxController {
     }
   }
 
-  // void showExitQuizDialog() {
-  //   Get.defaultDialog(
-  //     title: 'Konfirmasi',
-  //     middleText: 'Apakah Anda yakin ingin menyudahi ujian?',
-  //     radius: 20,
-  //     contentPadding: const EdgeInsets.all(16),
-  //     titleStyle: const TextStyle(
-  //       fontSize: 20,
-  //       fontWeight: FontWeight.bold,
-  //       backgroundColor: Colors.blue,
-  //     ),
-  //     confirm: ElevatedButton(
-  //       onPressed: () {
-  //         if (selectedIndices.isNotEmpty) {
-  //           int selectedAnswerIndex = selectedIndices[0];
-  //           List<int> correctAnswerIndices =
-  //               questions[currentQuestionIndex.value]['correctIndex'];
-
-  //           if (correctAnswerIndices.contains(selectedAnswerIndex)) {
-  //             score.value++;
-  //           }
-  //         }
-  //         selectedIndices.clear();
-  //         Get.offAllNamed(Routes.RESULT); // Pindah ke halaman hasil
-  //       },
-  //       child: const Text('Ya'),
-  //     ),
-  //     cancel: ElevatedButton(
-  //       onPressed: () {
-  //         Get.back();
-  //       },
-  //       child: const Text('Tidak'),
-  //     ),
-  //   );
-  // }
   void showExitQuizDialog() {
     Get.dialog(
       Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              color: Colors
-                  .blue, // Ganti warna latar belakang sesuai keinginan Anda
               padding: const EdgeInsets.all(16),
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
               width: double.infinity,
               child: const Text(
                 'Konfirmasi',
                 style: TextStyle(
-                  color: Colors.white, // Ganti warna teks jika diperlukan
-                  fontSize: 18, // Ganti ukuran font jika diperlukan
+                  color: Colors.white,
+                  fontSize: 18,
                 ),
               ),
             ),
@@ -144,6 +118,13 @@ class QuizController extends GetxController {
                   onPressed: () {
                     Get.back();
                   },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Colors.blue,
+                    fixedSize: Size(Get.width * 0.3, 50),
+                  ),
                   child: const Text('Tidak'),
                 ),
                 ElevatedButton(
@@ -160,6 +141,13 @@ class QuizController extends GetxController {
                     selectedIndices.clear();
                     Get.offAllNamed(Routes.RESULT); // Pindah ke halaman hasil
                   },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    backgroundColor: Colors.blue,
+                    fixedSize: Size(Get.width * 0.3, 50),
+                  ),
                   child: const Text('Ya'),
                 ),
               ],
