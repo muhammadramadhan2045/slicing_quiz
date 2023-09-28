@@ -42,14 +42,15 @@ class QuizView extends GetView<QuizController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      Icon(Icons.timer_outlined, size: 30),
-                      SizedBox(width: 10),
-                      Text(
-                        '00:00',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                      const Icon(Icons.timer_outlined, size: 30),
+                      const SizedBox(width: 10),
+                      Obx(() => Text(
+                            controller
+                                .getFormatTime(controller.timeRemaining.value),
+                            style: const TextStyle(fontSize: 18),
+                          )),
                     ],
                   ),
                   Obx(

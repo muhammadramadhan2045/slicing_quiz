@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_getx/app/routes/app_pages.dart';
@@ -8,9 +10,13 @@ class QuizController extends GetxController {
   var selectedIndices = <int>[].obs;
   var selectedAnswers = <dynamic>[].obs;
 
+  RxInt timeRemaining = 100.obs;
+  Timer? timer;
+
   @override
   void onInit() {
     super.onInit();
+    startTimer();
   }
 
   List<Map<String, dynamic>> questions = [
@@ -33,6 +39,16 @@ class QuizController extends GetxController {
       'question': 'Berapa hasil dari 2 + 2?',
       'answers': ['2', '4', '6', '8'],
       'correctIndex': [1]
+    },
+    {
+      'question': 'Mana saja yang termasuk benua di dunia?',
+      'answers': [
+        ['Indonesia', false],
+        ['Australia', false],
+        ['Afrika', false],
+        ['Jawa', false],
+      ],
+      'correctIndices': [1, 2],
     },
   ];
 
@@ -139,6 +155,7 @@ class QuizController extends GetxController {
                       }
                     }
                     selectedIndices.clear();
+                    stopTimer();
                     Get.toNamed(Routes.RESULT); // Pindah ke halaman hasil
                   },
                   style: ElevatedButton.styleFrom(
@@ -156,5 +173,50 @@ class QuizController extends GetxController {
         ),
       ),
     );
+  }
+
+  void stopTimer() {
+    timer?.cancel();
+  }
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(
+      oneSec,
+      (timer) {
+        if (timeRemaining.value == 0) {
+          timer.cancel();
+          Get.snackbar(
+            'Waktu Habis',
+            'Waktu Anda telah habis',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+            borderRadius: 10,
+            duration: const Duration(seconds: 3),
+          );
+          Get.toNamed(Routes.RESULT);
+        } else {
+          timeRemaining.value--;
+        }
+      },
+    );
+  }
+
+  String getFormatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+
+    String minutesString = minutes.toString().padLeft(2, '0');
+    String secondsString = remainingSeconds.toString().padLeft(2, '0');
+
+    return '$minutesString:$secondsString';
+  }
+
+  @override
+  void onClose() {
+    timer?.cancel();
+    super.onClose();
   }
 }
