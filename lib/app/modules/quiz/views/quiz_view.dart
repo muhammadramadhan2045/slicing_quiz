@@ -83,7 +83,16 @@ class QuizView extends GetView<QuizController> {
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
-              const SizedBox(height: 20),
+              if (controller.questions[controller.currentQuestionIndex.value]
+                      ['image'] !=
+                  null)
+                Image.network(
+                  controller.questions[controller.currentQuestionIndex.value]
+                      ['image'],
+                  width: 200, // Adjust the width as needed
+                  height: 200,
+                ),
+              const SizedBox(height: 10),
               Obx(
                 () => controller.isMultipleChoice
                     ? Column(
@@ -93,18 +102,32 @@ class QuizView extends GetView<QuizController> {
                                   .value]['answers'] as List<List<dynamic>>)
                               .asMap()
                               .entries
-                              .map((entry) {
-                            int index = entry.key;
-                            String answer = entry.value[0];
-                            bool isChecked = entry.value[1];
-                            return CheckboxListTile(
-                              title: Text(answer),
-                              value: isChecked,
-                              onChanged: (value) {
-                                controller.selectedAnswers[index] = value;
-                              },
-                            );
-                          })),
+                              .map(
+                            (entry) {
+                              int index = entry.key;
+                              debugPrint('index: $index');
+                              String answer = entry.value[0];
+                              bool isChecked = entry.value[1];
+                              return Card(
+                                color: const Color.fromRGBO(217, 217, 217, 1),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: CheckboxListTile(
+                                  title: Text(answer),
+                                  value: isChecked,
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                  onChanged: (value) {
+                                    controller.updateAnswerStatus(
+                                      controller.currentQuestionIndex.value,
+                                      index,
+                                      value!,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          )),
                           const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,23 +136,81 @@ class QuizView extends GetView<QuizController> {
                                 visible:
                                     controller.currentQuestionIndex.value > 0,
                                 child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    fixedSize: Size(
+                                      MediaQuery.of(context).size.width * 0.2,
+                                      50,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                  ),
                                   onPressed: () {
                                     controller.previousQuestion();
                                   },
-                                  child: const Text('Previous'),
+                                  child: const Icon(
+                                    Icons.arrow_circle_left_outlined,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                               ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  fixedSize: Size(
+                                    MediaQuery.of(context).size.width * 0.7,
+                                    50,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                ),
                                 onPressed: () {
-                                  controller
-                                      .checkAnswer(controller.selectedAnswers);
-                                  controller.nextQuestion();
-                                  controller.selectedAnswers.assignAll(
-                                      List.filled(
-                                          controller.selectedAnswers.length,
-                                          false));
+                                  if (controller.currentQuestionIndex.value <
+                                      controller.questions.length - 1) {
+                                    controller.nextQuestion();
+                                    controller.selectedAnswers.assignAll(
+                                        List.filled(
+                                            controller.selectedAnswers.length,
+                                            false));
+                                  } else {
+                                    controller
+                                        .showExitQuizDialog(); // Tampilkan dialog konfirmasi
+                                  }
                                 },
-                                child: const Text('Next'),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    controller.currentQuestionIndex.value <
+                                            controller.questions.length - 1
+                                        ? const Text(
+                                            "Next",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          )
+                                        : const Text(
+                                            "Submit",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                    const SizedBox(width: 10),
+                                    controller.currentQuestionIndex.value <
+                                            controller.questions.length - 1
+                                        ? const Icon(
+                                            Icons.arrow_circle_right_outlined,
+                                            color: Colors.white,
+                                          )
+                                        : const Icon(
+                                            Icons.done_outline_rounded,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

@@ -22,6 +22,7 @@ class QuizController extends GetxController {
   List<Map<String, dynamic>> questions = [
     {
       'question': 'Apa ibukota Indonesia?',
+      'image': 'https://imgpile.com/images/CEbjmW.md.jpg',
       'answers': ['Jakarta', 'Surabaya', 'Bandung', 'Medan'],
       'correctIndex': [0]
     },
@@ -54,6 +55,10 @@ class QuizController extends GetxController {
 
   bool get isMultipleChoice =>
       questions[currentQuestionIndex.value]['answers'] is List<List<dynamic>>;
+
+  void updateAnswerStatus(int questionIndex, int answerIndex, bool value) {
+    questions[questionIndex]['answers'][answerIndex][1] = value;
+  }
 
   void checkAnswer(List<dynamic> selectedAnswers) {
     List<dynamic> correctAnswers =
