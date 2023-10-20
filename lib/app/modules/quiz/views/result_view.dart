@@ -64,10 +64,9 @@ class ResultView extends GetView<QuizController> {
                   style: const TextStyle(fontSize: 18),
                 ),
 
-                //not answered
-                const Text(
-                  'Tidak Dijawab: 0',
-                  style: TextStyle(fontSize: 18),
+                Text(
+                  'Tidak Dijawab: ${emptyAnswer()}',
+                  style: const TextStyle(fontSize: 18),
                 ),
               ],
             ),
@@ -88,5 +87,15 @@ class ResultView extends GetView<QuizController> {
         ),
       ),
     );
+  }
+
+  int emptyAnswer() {
+    int count = 0;
+    controller.questions_temp.forEach((element) {
+      if (element['user_answer'] == null) {
+        count++;
+      }
+    });
+    return count;
   }
 }

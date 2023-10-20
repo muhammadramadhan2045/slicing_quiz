@@ -83,15 +83,6 @@ class QuizView extends GetView<QuizController> {
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
-              if (controller.questions[controller.currentQuestionIndex.value]
-                      ['image'] !=
-                  null)
-                Image.network(
-                  controller.questions[controller.currentQuestionIndex.value]
-                      ['image'],
-                  width: 200, // Adjust the width as needed
-                  height: 200,
-                ),
               const SizedBox(height: 10),
               Obx(
                 () => controller.isMultipleChoice
@@ -171,14 +162,13 @@ class QuizView extends GetView<QuizController> {
                                 onPressed: () {
                                   if (controller.currentQuestionIndex.value <
                                       controller.questions.length - 1) {
-                                    controller.nextQuestion();
                                     controller.selectedAnswers.assignAll(
                                         List.filled(
                                             controller.selectedAnswers.length,
                                             false));
+                                    controller.nextQuestion();
                                   } else {
-                                    controller
-                                        .showExitQuizDialog(); // Tampilkan dialog konfirmasi
+                                    controller.showExitQuizDialog();
                                   }
                                 },
                                 child: Row(
@@ -218,6 +208,15 @@ class QuizView extends GetView<QuizController> {
                       )
                     : Column(
                         children: [
+                          if (controller.questions[controller
+                                  .currentQuestionIndex.value]['image'] !=
+                              null)
+                            Image.network(
+                              controller.questions[controller
+                                  .currentQuestionIndex.value]['image'],
+                              width: 200, // Adjust the width as needed
+                              height: 200,
+                            ),
                           ...((controller.questions[controller
                                   .currentQuestionIndex
                                   .value]['answers'] as List<String>)
@@ -241,6 +240,10 @@ class QuizView extends GetView<QuizController> {
                                   onChanged: (int? value) {
                                     controller.selectedIndices
                                         .assignAll([value ?? -1]);
+                                    controller.questions_temp[controller
+                                        .currentQuestionIndex
+                                        .value]['your_answer'] = value;
+                                    controller.update();
                                   },
                                 ),
                               );
@@ -387,9 +390,11 @@ class QuizView extends GetView<QuizController> {
                         alignment: Alignment.center,
                         margin: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
-                          color: controller.currentQuestionIndex.value == index
+                          color: controller.questions_temp[index]
+                                      ['user_answer'] !=
+                                  null
                               ? Colors.green
-                              : const Color.fromRGBO(217, 217, 217, 1),
+                              : Colors.grey,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(

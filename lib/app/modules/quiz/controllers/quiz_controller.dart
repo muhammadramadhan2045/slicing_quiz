@@ -8,6 +8,7 @@ class QuizController extends GetxController {
   var currentQuestionIndex = 0.obs;
   var score = 0.obs;
   var selectedIndices = <int>[].obs;
+  var selectedIndices_temp = <int>[].obs;
   var selectedAnswers = <dynamic>[].obs;
 
   RxInt timeRemaining = 100.obs;
@@ -17,6 +18,7 @@ class QuizController extends GetxController {
   void onInit() {
     super.onInit();
     startTimer();
+    questions_temp = questions;
   }
 
   List<Map<String, dynamic>> questions = [
@@ -24,8 +26,19 @@ class QuizController extends GetxController {
       'question': 'Apa ibukota Indonesia?',
       'image': 'https://imgpile.com/images/CEbjmW.md.jpg',
       'answers': ['Jakarta', 'Surabaya', 'Bandung', 'Medan'],
-      'correctIndex': [0]
+      'correctIndex': [0],
+      'user_answer': null,
     },
+    // {
+    //   'question': 'Mana saja yang termasuk benua di dunia?',
+    //   'answers': [
+    //     ['Indonesia', false],
+    //     ['Australia', false],
+    //     ['Afrika', false],
+    //     ['Jawa', false],
+    //   ],
+    //   'correctIndices': [1, 2],
+    // },
     {
       'question': 'Siapakah presiden pertama Indonesia?',
       'answers': [
@@ -34,24 +47,18 @@ class QuizController extends GetxController {
         'Joko Widodo',
         'Megawati Soekarnoputri'
       ],
-      'correctIndex': [1]
+      'correctIndex': [1],
+      'user_answer': null,
     },
     {
       'question': 'Berapa hasil dari 2 + 2?',
       'answers': ['2', '4', '6', '8'],
-      'correctIndex': [1]
-    },
-    {
-      'question': 'Mana saja yang termasuk benua di dunia?',
-      'answers': [
-        ['Indonesia', false],
-        ['Australia', false],
-        ['Afrika', false],
-        ['Jawa', false],
-      ],
-      'correctIndices': [1, 2],
+      'correctIndex': [1],
+      'user_answer': null,
     },
   ];
+
+  List<Map<String, dynamic>> questions_temp = [];
 
   bool get isMultipleChoice =>
       questions[currentQuestionIndex.value]['answers'] is List<List<dynamic>>;
@@ -72,7 +79,7 @@ class QuizController extends GetxController {
 
   void nextQuestion() {
     if (isMultipleChoice) {
-      checkAnswer(selectedAnswers);
+      // checkAnswer(selectedAnswers);
       selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
@@ -80,10 +87,16 @@ class QuizController extends GetxController {
         List<int> correctAnswerIndices =
             questions[currentQuestionIndex.value]['correctIndex'];
 
+        //update question temp
+        questions_temp[currentQuestionIndex.value]['user_answer'] =
+            selectedIndices;
+
         if (correctAnswerIndices.contains(selectedAnswerIndex)) {
           score.value++;
         }
       }
+
+      selectedIndices_temp = selectedIndices;
       selectedIndices.clear();
     }
 
@@ -158,6 +171,11 @@ class QuizController extends GetxController {
                       if (correctAnswerIndices.contains(selectedAnswerIndex)) {
                         score.value++;
                       }
+                    }
+                    //update question temp
+                    if (selectedIndices.isNotEmpty) {
+                      questions_temp[currentQuestionIndex.value]
+                          ['user_answer'] = selectedIndices;
                     }
                     selectedIndices.clear();
                     stopTimer();
