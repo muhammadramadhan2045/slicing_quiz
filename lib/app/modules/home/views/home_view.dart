@@ -37,7 +37,7 @@ class HomeView extends GetView<HomeController> {
                   backgroundColor: Colors.white,
                 );
               },
-              child: Text('Mulai Kuis'),
+              child: const Text('Mulai Kuis'),
             ),
           ],
         ),

@@ -8,10 +8,10 @@ class QuizController extends GetxController {
   var currentQuestionIndex = 0.obs;
   var score = 0.obs;
   var selectedIndices = <int>[].obs;
-  var selectedIndices_temp = <int>[].obs;
+  var selectedIndicesTemp = <int>[].obs;
   var selectedAnswers = <dynamic>[].obs;
 
-  RxInt timeRemaining = 100.obs;
+  RxInt timeRemaining = 600.obs;
   Timer? timer;
 
   @override
@@ -83,20 +83,19 @@ class QuizController extends GetxController {
       selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
-        int selectedAnswerIndex = selectedIndices[0];
         List<int> correctAnswerIndices =
             questions[currentQuestionIndex.value]['correctIndex'];
+
+        selectedIndicesTemp.add(selectedIndices[0]);
+        print("selectedIndicesTemp: $selectedIndicesTemp");
 
         //update question temp
         questions_temp[currentQuestionIndex.value]['user_answer'] =
             selectedIndices;
+        //
 
-        if (correctAnswerIndices.contains(selectedAnswerIndex)) {
-          score.value++;
-        }
+        checkAnswer(correctAnswerIndices);
       }
-
-      selectedIndices_temp = selectedIndices;
       selectedIndices.clear();
     }
 
@@ -167,6 +166,8 @@ class QuizController extends GetxController {
                       int selectedAnswerIndex = selectedIndices[0];
                       List<int> correctAnswerIndices =
                           questions[currentQuestionIndex.value]['correctIndex'];
+                      selectedIndicesTemp.add(selectedIndices[0]);
+                      debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
                       if (correctAnswerIndices.contains(selectedAnswerIndex)) {
                         score.value++;
@@ -177,7 +178,8 @@ class QuizController extends GetxController {
                       questions_temp[currentQuestionIndex.value]
                           ['user_answer'] = selectedIndices;
                     }
-                    selectedIndices.clear();
+
+                    // selectedIndices.clear();
                     stopTimer();
                     Get.toNamed(Routes.RESULT); // Pindah ke halaman hasil
                   },
@@ -228,13 +230,19 @@ class QuizController extends GetxController {
   }
 
   String getFormatTime(int seconds) {
-    int minutes = seconds ~/ 60;
+    int hours = seconds ~/ 3600;
+    int minutes = (seconds % 3600) ~/ 60;
     int remainingSeconds = seconds % 60;
 
+    String hoursString = hours.toString().padLeft(2, '0');
     String minutesString = minutes.toString().padLeft(2, '0');
     String secondsString = remainingSeconds.toString().padLeft(2, '0');
 
-    return '$minutesString:$secondsString';
+    if (hours > 0) {
+      return '$hoursString:$minutesString:$secondsString';
+    } else {
+      return '$minutesString:$secondsString';
+    }
   }
 
   @override

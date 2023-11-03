@@ -214,8 +214,8 @@ class QuizView extends GetView<QuizController> {
                             Image.network(
                               controller.questions[controller
                                   .currentQuestionIndex.value]['image'],
-                              width: 200, // Adjust the width as needed
-                              height: 200,
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.height * 0.3,
                             ),
                           ...((controller.questions[controller
                                   .currentQuestionIndex
@@ -243,6 +243,7 @@ class QuizView extends GetView<QuizController> {
                                     controller.questions_temp[controller
                                         .currentQuestionIndex
                                         .value]['your_answer'] = value;
+
                                     controller.update();
                                   },
                                 ),
