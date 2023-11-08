@@ -11,7 +11,7 @@ class QuizController extends GetxController {
   var selectedIndicesTemp = <int>[].obs;
   var selectedAnswers = <dynamic>[].obs;
 
-  RxInt timeRemaining = 600.obs;
+  RxInt timeRemaining = 1500.obs;
   Timer? timer;
 
   @override
@@ -29,16 +29,6 @@ class QuizController extends GetxController {
       'correctIndex': [0],
       'user_answer': null,
     },
-    // {
-    //   'question': 'Mana saja yang termasuk benua di dunia?',
-    //   'answers': [
-    //     ['Indonesia', false],
-    //     ['Australia', false],
-    //     ['Afrika', false],
-    //     ['Jawa', false],
-    //   ],
-    //   'correctIndices': [1, 2],
-    // },
     {
       'question': 'Siapakah presiden pertama Indonesia?',
       'answers': [
@@ -56,6 +46,16 @@ class QuizController extends GetxController {
       'correctIndex': [1],
       'user_answer': null,
     },
+    // {
+    //   'question': 'Mana saja yang termasuk benua di dunia?',
+    //   'answers': [
+    //     ['Indonesia', false],
+    //     ['Australia', false],
+    //     ['Afrika', false],
+    //     ['Jawa', false],
+    //   ],
+    //   'correctIndices': [1, 2],
+    // },
   ];
 
   List<Map<String, dynamic>> questions_temp = [];
@@ -73,8 +73,24 @@ class QuizController extends GetxController {
 
     if (selectedAnswers.length == correctAnswers.length &&
         selectedAnswers.every((answer) => correctAnswers.contains(answer))) {
-      score.value++;
+      score++;
+    } else {
+      //jika sebelumnya memilih jawaban benar , kmudian mengganti menjadi salah maka kurangi score dan jika sebelumnya telah memilih jawaban salah maka tidak perlu dikurangi score
+      if (selectedIndicesTemp.length > currentQuestionIndex.value) {
+        if (selectedIndicesTemp[currentQuestionIndex.value] ==
+            correctAnswers[0]) {
+          score.value++;
+        } else {
+          if (score.value > 0 &&
+              selectedIndicesTemp[currentQuestionIndex.value] !=
+                  correctAnswers[0]) {
+            score.value--;
+          }
+        }
+      }
     }
+    debugPrint("selectedIndices score now : ${score.value}");
+    debugPrint("selected_correctAnswers: $correctAnswers");
   }
 
   void nextQuestion() {
@@ -83,18 +99,20 @@ class QuizController extends GetxController {
       selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
-        List<int> correctAnswerIndices =
-            questions[currentQuestionIndex.value]['correctIndex'];
-
-        selectedIndicesTemp.add(selectedIndices[0]);
-        print("selectedIndicesTemp: $selectedIndicesTemp");
+        //jika pada nomor soal yang sama maka update jawban,kemdian jika pindah nomor soal maka tambahkan jawaban
+        if (selectedIndicesTemp.length > currentQuestionIndex.value) {
+          selectedIndicesTemp[currentQuestionIndex.value] = selectedIndices[0];
+        } else {
+          selectedIndicesTemp.add(selectedIndices[0]);
+        }
+        debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
         //update question temp
         questions_temp[currentQuestionIndex.value]['user_answer'] =
             selectedIndices;
-        //
 
-        checkAnswer(correctAnswerIndices);
+        checkAnswer(selectedIndices);
+        debugPrint("selectedIndices: $selectedIndices");
       }
       selectedIndices.clear();
     }
@@ -107,6 +125,28 @@ class QuizController extends GetxController {
   }
 
   void previousQuestion() {
+    if (isMultipleChoice) {
+      // checkAnswer(selectedAnswers);
+      selectedAnswers.clear();
+    } else {
+      if (selectedIndices.isNotEmpty) {
+        //jika pada nomor soal yang sama maka update jawban,kemdian jika pindah nomor soal maka tambahkan jawaban
+        if (selectedIndicesTemp.length > currentQuestionIndex.value) {
+          selectedIndicesTemp[currentQuestionIndex.value] = selectedIndices[0];
+        } else {
+          selectedIndicesTemp.add(selectedIndices[0]);
+        }
+        debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
+
+        //update question temp
+        questions_temp[currentQuestionIndex.value]['user_answer'] =
+            selectedIndices;
+
+        checkAnswer(selectedIndices);
+        debugPrint("selectedIndices: $selectedIndices");
+      }
+      selectedIndices.clear();
+    }
     if (currentQuestionIndex.value > 0) {
       currentQuestionIndex.value--;
     }

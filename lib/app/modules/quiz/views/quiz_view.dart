@@ -233,9 +233,15 @@ class QuizView extends GetView<QuizController> {
                                 child: RadioListTile<int>(
                                   title: Text(answer),
                                   value: index,
-                                  groupValue:
-                                      controller.selectedIndices.isNotEmpty
-                                          ? controller.selectedIndices[0]
+                                  groupValue: controller
+                                          .selectedIndices.isNotEmpty
+                                      ? controller.selectedIndices[0]
+                                      : controller.selectedIndicesTemp.length >
+                                              controller
+                                                  .currentQuestionIndex.value
+                                          ? controller.selectedIndicesTemp[
+                                              controller
+                                                  .currentQuestionIndex.value]
                                           : null,
                                   onChanged: (int? value) {
                                     controller.selectedIndices
