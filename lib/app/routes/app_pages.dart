@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:quiz_getx/app/modules/home/views/pickquiz_view_view.dart';
 import 'package:quiz_getx/app/modules/quiz/views/result_view.dart';
 
 import '../modules/home/bindings/home_binding.dart';
@@ -11,12 +12,17 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.QUIZ;
+  static const INITIAL = Routes.HOME;
 
   static final routes = [
     GetPage(
       name: _Paths.HOME,
       page: () => const HomeView(),
+      binding: HomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.PICKQUIZVIEWVIEW,
+      page: () => const PickquizViewView(),
       binding: HomeBinding(),
     ),
     GetPage(
