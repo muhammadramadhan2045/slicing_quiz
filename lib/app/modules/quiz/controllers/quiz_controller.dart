@@ -19,6 +19,10 @@ class QuizController extends GetxController {
     super.onInit();
     startTimer();
     questions_temp = questions;
+    //jadikan panjang array sesuai dengan jumlah soal
+    for (int i = 0; i < questions.length; i++) {
+      selectedIndicesTemp.add(-1);
+    }
   }
 
   List<Map<String, dynamic>> questions = [
@@ -67,6 +71,10 @@ class QuizController extends GetxController {
     questions[questionIndex]['answers'][answerIndex][1] = value;
   }
 
+  bool hasChangedFromCorrect =
+      false; // Variable untuk melacak perubahan dari jawaban yang benar
+
+/* kode pertama
   void checkAnswer(List<dynamic> selectedAnswers) {
     List<dynamic> correctAnswers =
         questions[currentQuestionIndex.value]['correctIndex'];
@@ -84,13 +92,46 @@ class QuizController extends GetxController {
           if (score.value > 0 &&
               selectedIndicesTemp[currentQuestionIndex.value] !=
                   correctAnswers[0]) {
-            score.value--;
+            score.value --;
+            //if sebelumnya memilih jawaban salah maka tidak perlu dikurangi score
+          } else {
+            if (score.value > 0) {
+              score.value--;
+            } else {
+              score.value += 0;
+            }
           }
         }
       }
     }
     debugPrint("selectedIndices score now : ${score.value}");
-    debugPrint("selected_correctAnswers: $correctAnswers");
+    // debugPrint("selected_correctAnswers: $correctAnswers");
+  }
+
+ */
+  void checkAnswer(List<dynamic> selectedAnswers) {
+    List<dynamic> correctAnswers =
+        questions[currentQuestionIndex.value]['correctIndex'];
+
+    if (selectedAnswers.length == correctAnswers.length &&
+        selectedAnswers.every((answer) => correctAnswers.contains(answer))) {
+      // Jawaban benar
+      score.value++;
+    } else {
+      if (selectedIndicesTemp.length > currentQuestionIndex.value) {
+        int previousAnswer = selectedIndicesTemp[currentQuestionIndex.value];
+
+        if (previousAnswer == correctAnswers[0]) {
+          // Sebelumnya memilih jawaban benar, dan sekarang salah
+          score.value--;
+        } else {
+          // Sebelumnya memilih jawaban salah, tidak ada pengurangan skor
+          score.value += 0;
+        }
+      }
+    }
+
+    debugPrint("selectedIndices score now: ${score.value}");
   }
 
   void nextQuestion() {
@@ -99,12 +140,8 @@ class QuizController extends GetxController {
       selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
-        //jika pada nomor soal yang sama maka update jawban,kemdian jika pindah nomor soal maka tambahkan jawaban
-        if (selectedIndicesTemp.length > currentQuestionIndex.value) {
-          selectedIndicesTemp[currentQuestionIndex.value] = selectedIndices[0];
-        } else {
-          selectedIndicesTemp.add(selectedIndices[0]);
-        }
+        selectedIndicesTemp[currentQuestionIndex.value] = selectedIndices[0];
+
         debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
         //update question temp
@@ -206,7 +243,8 @@ class QuizController extends GetxController {
                       int selectedAnswerIndex = selectedIndices[0];
                       List<int> correctAnswerIndices =
                           questions[currentQuestionIndex.value]['correctIndex'];
-                      selectedIndicesTemp.add(selectedIndices[0]);
+                      selectedIndicesTemp[currentQuestionIndex.value] =
+                          selectedIndices[0];
                       debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
                       if (correctAnswerIndices.contains(selectedAnswerIndex)) {

@@ -106,6 +106,7 @@ class QuizView extends GetView<QuizController> {
                                 child: CheckboxListTile(
                                   title: Text(answer),
                                   value: isChecked,
+                                  selectedTileColor: Colors.blue,
                                   controlAffinity:
                                       ListTileControlAffinity.leading,
                                   onChanged: (value) {
