@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_getx/app/modules/home/controllers/home_controller.dart';
-import 'package:quiz_getx/app/routes/app_pages.dart';
 
 class ExplanationWidget extends StatelessWidget {
-  ExplanationWidget({super.key});
+  final VoidCallback onPressed;
+  ExplanationWidget({super.key, required this.onPressed});
 
   final HomeController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: Get.height * 0.5,
+        height: Get.height * 0.45,
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -37,11 +37,12 @@ class ExplanationWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
+                        backgroundColor:
+                            Theme.of(context).primaryColor.withOpacity(0.75),
                         child: Icon(
                           icon,
                           color: Colors.white,
                         ),
-                        backgroundColor: Colors.blue.withOpacity(0.8),
                       ), // Ikon
                       const SizedBox(height: 8), // Spasi antara ikon dan teks
                       Text(
@@ -78,7 +79,7 @@ class ExplanationWidget extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () => Get.offAllNamed(Routes.QUIZ),
+                  onPressed: onPressed,
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

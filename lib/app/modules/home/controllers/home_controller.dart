@@ -22,18 +22,18 @@ class HomeController extends GetxController {
   void increment() => count.value++;
 
   final List<Map<String, dynamic>> iconsData = [
-    {'icon': Icons.edit_note_rounded, 'text': 'Koreksi jika perlu'},
-    {'icon': Icons.person_2, 'text': 'Berada ditempat kondusif'},
+    {'icon': Icons.edit_note_rounded, 'text': 'Koreksi Jika Perlu'},
+    {'icon': Icons.person_2, 'text': 'Tempat Kondusif'},
     {'icon': Icons.person_2, 'text': 'Jujur'},
     {'icon': Icons.network_wifi, 'text': 'Koneksi Stabil'},
     {'icon': Icons.battery_full, 'text': 'Baterai Cukup'},
-    {'icon': Icons.phone_android, 'text': 'Tidak Keluar dari Aplikasi'},
+    {'icon': Icons.phone_android, 'text': 'Tidak Keluar'},
   ];
 
   // Ini hanya contoh, Anda perlu mengisi data sesuai kebutuhan aplikasi Anda
   var mataKuliahList = <MataKuliah>[
-    MataKuliah(idMataKuliah: '1', namaMataKuliah: 'Matematika'),
-    MataKuliah(idMataKuliah: '2', namaMataKuliah: 'Fisika'),
+    MataKuliah(idMataKuliah: '1', namaMataKuliah: 'Flutter'),
+    MataKuliah(idMataKuliah: '2', namaMataKuliah: 'Kotlin'),
     // Tambahkan mata kuliah lainnya
   ].obs;
 
@@ -42,34 +42,34 @@ class HomeController extends GetxController {
     Quiz(
       idUQuiz: '1',
       idMataKuliah: '1',
-      namaQuiz: 'Ujian Pertama',
+      namaQuiz: 'Kuis Pertama',
       tanggalQuiz: DateTime.now(),
-      durasiPengerjaan: 60,
+      durasiPengerjaan: 6000,
     ),
 
     Quiz(
       idUQuiz: '2',
       idMataKuliah: '1',
-      namaQuiz: 'Ujian Kedua',
+      namaQuiz: 'Kuis Kedua',
       tanggalQuiz: DateTime.now(),
-      durasiPengerjaan: 60,
+      durasiPengerjaan: 6000,
     ),
     Quiz(
       idUQuiz: '3',
       idMataKuliah: '1',
-      namaQuiz: 'Ujian Ketiga',
+      namaQuiz: 'Kuis Ketiga',
       tanggalQuiz: DateTime.now(),
-      durasiPengerjaan: 60,
+      durasiPengerjaan: 6000,
     ),
 
     Quiz(
       idUQuiz: '4',
       idMataKuliah: '2',
-      namaQuiz: 'Ujian Keempat diklat flutter',
+      namaQuiz: 'Kuis Keempat Pemrograman Kotlin',
       tanggalQuiz: DateTime.now(),
-      durasiPengerjaan: 60,
+      durasiPengerjaan: 6000,
     ),
-  ];
+  ].obs;
 
   // Fungsi untuk mendapatkan daftar ujian berdasarkan id mata kuliah
   List<Quiz> getQuizzesForMataKuliah(String idMataKuliah) {

@@ -22,17 +22,29 @@ class Quiz {
 }
 
 class Question {
+  final String idQuiz;
   final String question;
   final String? image;
   final List<String> answers;
-  final List<int> correctIndices;
+  String? optionA;
+  String? optionB;
+  String? optionC;
+  String? optionD;
+  String? optionE;
+  final List<int> correctIndex;
   List<int>? userAnswerIndices;
 
   Question({
+    required this.idQuiz,
     required this.question,
+    this.optionA,
+    this.optionB,
+    this.optionC,
+    this.optionD,
+    this.optionE,
     this.image,
     required this.answers,
-    required this.correctIndices,
+    required this.correctIndex,
     this.userAnswerIndices,
   });
 }

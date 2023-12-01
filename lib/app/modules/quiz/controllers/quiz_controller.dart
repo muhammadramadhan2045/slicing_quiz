@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quiz_getx/app/data/model/matkul_model.dart';
 import 'package:quiz_getx/app/routes/app_pages.dart';
 
 class QuizController extends GetxController {
@@ -9,67 +10,196 @@ class QuizController extends GetxController {
   var score = 0.obs;
   var selectedIndices = <int>[].obs;
   var selectedIndicesTemp = <int>[].obs;
-  var selectedAnswers = <dynamic>[].obs;
+  var selectedAnswers = <bool>[].obs;
+  var quiz = Get.arguments as Quiz;
+  var showQuitDialog = false.obs;
 
-  RxInt timeRemaining = 1500.obs;
+  RxInt timeRemaining = RxInt(Get.arguments.durasiPengerjaan);
   Timer? timer;
 
   @override
   void onInit() {
     super.onInit();
     startTimer();
-    questions_temp = questions;
+    questions_temp = qustions;
     //jadikan panjang array sesuai dengan jumlah soal
-    for (int i = 0; i < questions.length; i++) {
+    for (int i = 0;
+        i <
+            qustions.where((element) {
+              return element.idQuiz == quiz.idUQuiz.toString();
+            }).length;
+        i++) {
       selectedIndicesTemp.add(-1);
     }
+
+    selectedAnswers = List.generate(
+      getQuestionsForQuiz(quiz.idUQuiz.toString())[currentQuestionIndex.value]
+          .answers
+          .length,
+      (index) => false,
+    ).obs;
+    debugPrint("selectedAnswers: $selectedAnswers");
   }
 
-  List<Map<String, dynamic>> questions = [
-    {
-      'question': 'Apa ibukota Indonesia?',
-      'image': 'https://imgpile.com/images/CEbjmW.md.jpg',
-      'answers': ['Jakarta', 'Surabaya', 'Bandung', 'Medan'],
-      'correctIndex': [0],
-      'user_answer': null,
-    },
-    {
-      'question': 'Siapakah presiden pertama Indonesia?',
-      'answers': [
+  // List<Map<String, dynamic>> questions = [
+  //   {
+  //     'question': 'Apa ibukota Indonesia?',
+  //     'image': 'https://imgpile.com/images/CEbjmW.md.jpg',
+  //     'answers': ['Jakarta', 'Surabaya', 'Bandung', 'Medan'],
+  //     'correctIndex': [0],
+  //     'user_answer': null,
+  //   },
+  //   {
+  //     'question': 'Siapakah presiden pertama Indonesia?',
+  //     'answers': [
+  //       'Soeharto',
+  //       'Soekarno',
+  //       'Joko Widodo',
+  //       'Megawati Soekarnoputri'
+  //     ],
+  //     'correctIndex': [1],
+  //     'user_answer': null,
+  //   },
+  //   {
+  //     'question': 'Berapa hasil dari 2 + 2?',
+  //     'answers': ['2', '4', '6', '8'],
+  //     'correctIndex': [1],
+  //     'user_answer': null,
+  //   },
+  //   {
+  //     'question': 'Berapa hasil dari 2 + 2?',
+  //     'answers': ['2', '4', '6', '8'],
+  //     'correctIndex': [1],
+  //     'user_answer': null,
+  //   },
+  //   // {
+  //   //   'question': 'Mana saja yang termasuk benua di dunia?',
+  //   //   'answers': [
+  //   //     ['Indonesia', false],
+  //   //     ['Australia', false],
+  //   //     ['Afrika', false],
+  //   //     ['Jawa', false],
+  //   //   ],
+  //   //   'correctIndices': [1, 2],
+  //   // },
+  // ];
+
+  List<Question> qustions = [
+    Question(
+      idQuiz: '1',
+      question: 'Apa ibukota Indonesia?',
+      image: 'https://imgpile.com/images/CEbjmW.md.jpg',
+      answers: ['Jakarta', 'Surabaya', 'Bandung', 'Medan'],
+      correctIndex: [0],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Siapakah presiden pertama Indonesia?',
+      answers: [
         'Soeharto',
         'Soekarno',
         'Joko Widodo',
         'Megawati Soekarnoputri'
       ],
-      'correctIndex': [1],
-      'user_answer': null,
-    },
-    {
-      'question': 'Berapa hasil dari 2 + 2?',
-      'answers': ['2', '4', '6', '8'],
-      'correctIndex': [1],
-      'user_answer': null,
-    },
-    // {
-    //   'question': 'Mana saja yang termasuk benua di dunia?',
-    //   'answers': [
-    //     ['Indonesia', false],
-    //     ['Australia', false],
-    //     ['Afrika', false],
-    //     ['Jawa', false],
-    //   ],
-    //   'correctIndices': [1, 2],
-    // },
-  ];
+      correctIndex: [1],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Berapa hasil dari 2 + 2?',
+      answers: ['2', '4', '6', '8'],
+      correctIndex: [1],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Tes 4 * 5?',
+      answers: ['2', '40', '20', '9'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Tes 4 * 5?',
+      answers: ['2', '40', '20', '9'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Tes 4 * 5?',
+      answers: ['2', '40', '20', '9'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Tes 4 * 5?',
+      answers: ['2', '40', '20', '9'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '1',
+      question: 'Tes 4 * 5?',
+      answers: ['2', '40', '20', '9'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '2',
+      question: 'Berapa hasil dari 10 * 10?',
+      answers: ['120', '240', '100', '99'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '2',
+      question: 'Berapa hasil dari 10 * 10?',
+      answers: ['120', '240', '100', '99'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '2',
+      question: 'Nama Benua Di Dunia?',
+      answers: ['Asia', 'Eropa', 'Afrika Selatan', 'Amerika'],
+      correctIndex: [1, 2, 3],
+    ),
+    Question(
+      idQuiz: '3',
+      question: 'Berapa hasil dari 10 * 10?',
+      optionA: '10',
+      optionB: '20',
+      optionC: '100',
+      optionD: '40',
+      answers: ['120', '240', '100', '99'],
+      correctIndex: [2],
+    ),
+    Question(
+      idQuiz: '4',
+      question: 'Berapa hasil dari 10 * 11?',
+      answers: ['120', '240', '100', '110'],
+      correctIndex: [3],
+    ),
+    Question(
+      idQuiz: '4',
+      question: 'Berapa hasil dari 120 * 10?',
+      answers: ['1200', '240', '100', '99'],
+      correctIndex: [0],
+    ),
+  ].obs;
 
-  List<Map<String, dynamic>> questions_temp = [];
+  // Fungsi untuk mendapatkan daftar soal berdasarkan idquiz
+  List<Question> getQuestionsForQuiz(String idQuiz) {
+    return qustions.where((element) {
+      return element.idQuiz == quiz.idUQuiz;
+    }).toList();
+  }
+
+  List<Question> questions_temp = [];
 
   bool get isMultipleChoice =>
-      questions[currentQuestionIndex.value]['answers'] is List<List<dynamic>>;
+      getQuestionsForQuiz(quiz.idUQuiz.toString())[currentQuestionIndex.value]
+          .correctIndex
+          .length >
+      1;
 
-  void updateAnswerStatus(int questionIndex, int answerIndex, bool value) {
-    questions[questionIndex]['answers'][answerIndex][1] = value;
-  }
+  // void updateAnswerStatus(int questionIndex, int answerIndex, bool value) {
+  //   qustions[questionIndex]['answers'][answerIndex][1] = value;
+  //   debugPrint("questions: $questions");
+  // }
 
   bool hasChangedFromCorrect =
       false; // Variable untuk melacak perubahan dari jawaban yang benar
@@ -111,7 +241,9 @@ class QuizController extends GetxController {
  */
   void checkAnswer(List<dynamic> selectedAnswers) {
     List<dynamic> correctAnswers =
-        questions[currentQuestionIndex.value]['correctIndex'];
+        getQuestionsForQuiz(quiz.idUQuiz.toString())[currentQuestionIndex.value]
+            .correctIndex;
+    debugPrint("selected correctAnswers: $correctAnswers");
 
     if (selectedAnswers.length == correctAnswers.length &&
         selectedAnswers.every((answer) => correctAnswers.contains(answer))) {
@@ -137,7 +269,7 @@ class QuizController extends GetxController {
   void nextQuestion() {
     if (isMultipleChoice) {
       // checkAnswer(selectedAnswers);
-      selectedAnswers.clear();
+      // selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
         selectedIndicesTemp[currentQuestionIndex.value] = selectedIndices[0];
@@ -145,7 +277,7 @@ class QuizController extends GetxController {
         debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
         //update question temp
-        questions_temp[currentQuestionIndex.value]['user_answer'] =
+        questions_temp[currentQuestionIndex.value].userAnswerIndices =
             selectedIndices;
 
         checkAnswer(selectedIndices);
@@ -154,17 +286,16 @@ class QuizController extends GetxController {
       selectedIndices.clear();
     }
 
-    if (currentQuestionIndex.value < questions.length - 1) {
+    if (currentQuestionIndex.value <
+        getQuestionsForQuiz(quiz.idUQuiz).length - 1) {
       currentQuestionIndex.value++;
-    } else {
-      showExitQuizDialog();
     }
   }
 
   void previousQuestion() {
     if (isMultipleChoice) {
-      // checkAnswer(selectedAnswers);
-      selectedAnswers.clear();
+      checkAnswer(selectedAnswers);
+      // selectedAnswers.clear();
     } else {
       if (selectedIndices.isNotEmpty) {
         //jika pada nomor soal yang sama maka update jawban,kemdian jika pindah nomor soal maka tambahkan jawaban
@@ -176,7 +307,7 @@ class QuizController extends GetxController {
         debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
 
         //update question temp
-        questions_temp[currentQuestionIndex.value]['user_answer'] =
+        questions_temp[currentQuestionIndex.value].userAnswerIndices =
             selectedIndices;
 
         checkAnswer(selectedIndices);
@@ -187,95 +318,6 @@ class QuizController extends GetxController {
     if (currentQuestionIndex.value > 0) {
       currentQuestionIndex.value--;
     }
-  }
-
-  void showExitQuizDialog() {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              width: double.infinity,
-              child: const Text(
-                'Konfirmasi',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Apakah Anda yakin ingin menyudahi ujian?'),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    backgroundColor: Colors.blue,
-                    fixedSize: Size(Get.width * 0.3, 50),
-                  ),
-                  child: const Text('Tidak'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedIndices.isNotEmpty) {
-                      int selectedAnswerIndex = selectedIndices[0];
-                      List<int> correctAnswerIndices =
-                          questions[currentQuestionIndex.value]['correctIndex'];
-                      selectedIndicesTemp[currentQuestionIndex.value] =
-                          selectedIndices[0];
-                      debugPrint("selectedIndicesTemp: $selectedIndicesTemp");
-
-                      if (correctAnswerIndices.contains(selectedAnswerIndex)) {
-                        score.value++;
-                      }
-                    }
-                    //update question temp
-                    if (selectedIndices.isNotEmpty) {
-                      questions_temp[currentQuestionIndex.value]
-                          ['user_answer'] = selectedIndices;
-                    }
-
-                    // selectedIndices.clear();
-                    stopTimer();
-                    Get.toNamed(Routes.RESULT); // Pindah ke halaman hasil
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    backgroundColor: Colors.blue,
-                    fixedSize: Size(Get.width * 0.3, 50),
-                  ),
-                  child: const Text('Ya'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void stopTimer() {

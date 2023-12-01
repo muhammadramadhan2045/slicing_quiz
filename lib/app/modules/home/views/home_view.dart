@@ -14,19 +14,20 @@ class HomeView extends GetView<HomeController> {
         builder: (controller) {
           return Scaffold(
               appBar: AppBar(
-                title: Text('Daftar Mata Kuliah'),
+                title: const Text('Daftar Mata Kuliah'),
               ),
               body: ListView.builder(
                 itemCount: controller.mataKuliahList.length,
                 itemBuilder: (context, index) {
                   var mataKuliah = controller.mataKuliahList[index];
-                  return ListTile(
-                    title: Text(mataKuliah.namaMataKuliah),
-                    onTap: () {
-                      Get.toNamed('/pickquizviewview',
-                          arguments: mataKuliah.idMataKuliah);
-                    },
-                  );
+                  return Obx(() => ListTile(
+                        title: Text(
+                            controller.mataKuliahList[index].namaMataKuliah),
+                        onTap: () {
+                          Get.toNamed('/pickquizviewview',
+                              arguments: mataKuliah.idMataKuliah);
+                        },
+                      ));
                 },
               ));
         });
